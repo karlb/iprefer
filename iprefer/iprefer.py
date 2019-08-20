@@ -26,7 +26,7 @@ def close_connection(exception):
 @dataclass
 class Item:
     name: str
-    id: int
+    item_id: int
     tags: dict
 
     def __post_init__(self):
@@ -34,9 +34,9 @@ class Item:
 
     def location_breadcrumb(self):
         return [
-            (self.tags['addr:country'], '#'),
-            (self.tags['addr:city'], '#'),
-            (self.tags['addr:suburb'], '#'),
+            (self.tags.get('addr:country', 'DE'), '#'),  # TODO: default
+            (self.tags.get('addr:city', 'Berlin'), '#'),  # TODO: default
+            (self.tags.get('addr:suburb'), '#'),
             (self.tags['addr:street'], '#'),
         ]
 
@@ -53,6 +53,9 @@ class Item:
         ]
 
 
+queries = aiosql.from_path("iprefer/item.sql", "sqlite3", record_classes=dict(Item=Item))
+
+
 @app.route('/')
 def hello_world():
     conn = get_db()
@@ -61,10 +64,11 @@ def hello_world():
     return render_template('index.html', items=items)
 
 
-@app.route('/item/<id>', methods=['GET', 'POST'])
-def item(id):
+@app.route('/item/<item_id>', methods=['GET', 'POST'])
+def item(item_id):
     conn = get_db()
-    main_item = Item(*conn.execute("SELECT * FROM item WHERE id = ?", [id]).fetchone())
+    main_item = Item(*conn.execute("SELECT * FROM item WHERE item_id = ?", [item_id]).fetchone())
+    user_id = 1
 
     if request.method == 'POST':
         # TODO: handle name not unique cases
@@ -74,17 +78,18 @@ def item(id):
             conn.execute("""
                 INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")
                 VALUES(:user_id, :prefers, :to)
-            """, dict(user_id=1, prefers=item.id, to=main_item.id))
-        return redirect(url_for('item', id=id))
+            """, dict(user_id=user_id, prefers=item.item_id, to=main_item.item_id))
+        return redirect(url_for('item', item_id=item_id))
 
-    return render_template('item.html', main_item=main_item)
+    better = queries.better(conn, user_id=user_id, item_id=main_item.item_id)
+    return render_template('item.html', main_item=main_item, better=better)
 
 
 @app.route('/json/typeahead')
 def typeahead():
     conn = get_db()
-    rows = conn.execute("SELECT id, name FROM item")
+    items = queries.all_items(conn)
     return jsonify([
-        dict(id=r[0], display=r[1])
-        for r in rows
+        dict(name=i.name, street=i.tags.get('addr:street'))
+        for i in items
     ])

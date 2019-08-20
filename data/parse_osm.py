@@ -28,13 +28,13 @@ conn.executescript('''
     DROP TABLE IF EXISTS item;
     CREATE TABLE item(
         name text,
-        id int,
+        item_id int,
         tags json
     )
 ''')
 print(
     conn.executemany(
-        'INSERT INTO item(name, id, tags) VALUES (:name, :id, :tags)',
+        'INSERT INTO item(name, item_id, tags) VALUES (:name, :id, :tags)',
         list(get_osm())
     ).rowcount,
     'rows inserted'

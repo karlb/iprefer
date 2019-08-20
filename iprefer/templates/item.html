@@ -14,6 +14,11 @@
     </nav>
 {% endmacro %}
 
+
+{% macro short_item(item) %}
+    <a href="{{ url_for('item', item_id=item.item_id) }}">{{item.name}}, {{item.tags['addr:street']}}</a>
+{% endmacro %}
+
 {% block content %}
     <script>
         $(function() {
@@ -34,8 +39,9 @@
                 hint: true,  // show inline gray autocomplete
                 accent: true,  // ignore accents 
                 cache: true,  // cache results in localstorage
+                display: 'name',  // attribute to use as match
                 {% raw %}
-                template: '{{display}}, {{id}}',
+                template: '{{name}}, {{street}}',
                 {% endraw %}
                 onSubmit: function(node, form, item, event) {
                     console.log(item);
@@ -87,6 +93,11 @@
                             </div>
                         </div>
                     </form>
+                    <ul>
+                    {% for item in better %}
+                        <li>{{ short_item(item) }}</li>
+                    {% endfor %}
+                    </ul>
                 </div>
                 <div class="col">
                     <h3>Worse</h3>

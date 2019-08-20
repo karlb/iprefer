@@ -1,3 +1,4 @@
 syntax: glob
 *.sw?
 __pycache__
+data/user.sqlite3

@@ -72,17 +72,25 @@ def item(item_id):
 
     if request.method == 'POST':
         # TODO: handle name not unique cases
-        name = request.form['better']
-        item = Item(*conn.execute("SELECT * FROM item WHERE name = ? LIMIT 1", [name]).fetchone())
+        item = Item(*conn.execute(
+            "SELECT * FROM item WHERE name = ? LIMIT 1",
+            [request.form['item_name']]
+        ).fetchone())
+        if request.form['better_or_worse'] == 'better':
+            preferred = item
+            other = main_item
+        else:
+            preferred = main_item
+            other = item
         with conn:
-            conn.execute("""
-                INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")
-                VALUES(:user_id, :prefers, :to)
-            """, dict(user_id=user_id, prefers=item.item_id, to=main_item.item_id))
+            queries.save_preference(
+                conn, user_id=user_id, prefers=preferred.item_id, to=other.item_id
+            )
         return redirect(url_for('item', item_id=item_id))
 
     better = queries.better(conn, user_id=user_id, item_id=main_item.item_id)
-    return render_template('item.html', main_item=main_item, better=better)
+    worse = queries.worse(conn, user_id=user_id, item_id=main_item.item_id)
+    return render_template('item.html', main_item=main_item, better=better, worse=worse)
 
 
 @app.route('/json/typeahead')

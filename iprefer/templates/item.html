@@ -19,6 +19,39 @@
     <a href="{{ url_for('item', item_id=item.item_id) }}">{{item.name}}, {{item.tags['addr:street']}}</a>
 {% endmacro %}
 
+{% macro opinion(better_or_worse, items) %}
+    {% if better_or_worse == 'better' %}
+        <h3>Better</h3>
+        I prefer the following to {{ main_item.name }}
+    {% else %}
+        <h3>Worse</h3>
+        I prefer {{ main_item.name }} to
+    {% endif %}
+    <form method="POST">
+        <div class="typeahead__container">
+            <div class="typeahead__field">
+                <div class="typeahead__query">
+                    <input class="js-typeahead"
+                           name="item_name"
+                           type="search"
+                           autocomplete="off">
+                    <input type="hidden" name="better_or_worse" value="{{ better_or_worse }}">
+                </div>
+                <div class="typeahead__button">
+                    <button type="submit">
+                        <span class="typeahead__search-icon"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <ul>
+    {% for item in items %}
+        <li>{{ short_item(item) }}</li>
+    {% endfor %}
+    </ul>
+{% endmacro %}
+
 {% block content %}
     <script>
         $(function() {
@@ -74,34 +107,10 @@
             <h2>My Opinion</h2>
             <div class="row">
                 <div class="col">
-                    <h3>Better</h3>
-                    I prefer the following to {{ main_item.name }}
-                    <form method="POST">
-                        <div class="typeahead__container">
-                            <div class="typeahead__field">
-                                <div class="typeahead__query">
-                                    <input class="js-typeahead"
-                                           name="better"
-                                           type="search"
-                                           autocomplete="off">
-                                </div>
-                                <div class="typeahead__button">
-                                    <button type="submit">
-                                        <span class="typeahead__search-icon"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <ul>
-                    {% for item in better %}
-                        <li>{{ short_item(item) }}</li>
-                    {% endfor %}
-                    </ul>
+                    {{ opinion('better', better) }}
                 </div>
                 <div class="col">
-                    <h3>Worse</h3>
-                    I prefer {{ main_item.name }} to
+                    {{ opinion('worse', worse) }}
                 </div>
             </div>
         </div>

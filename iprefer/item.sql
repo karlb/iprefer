@@ -39,6 +39,14 @@ WHERE key = :key
 ORDER BY coalesce(rank, 'inf')
 LIMIT 16;
 
+-- name: search_items
+-- record_class: Item
+SELECT item.*
+FROM item
+WHERE name LIKE '%' || :term || '%'
+ORDER BY coalesce(rank, 'inf')
+LIMIT 16;
+
 -- name: save_preference!
 -- Store which of these two items is preferred by the user
 INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")

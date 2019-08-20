@@ -18,6 +18,16 @@ def tag(key, value):
     return render_template('index.html', items=queries.tag_items(conn, key=key, value=value), category=value)
 
 
+@app.route('/search')
+def search():
+    conn = get_db()
+    return render_template(
+        'index.html',
+        items=queries.search_items(conn, term=request.args['term']),
+        category='search matches',
+    )
+
+
 @app.route('/item/<item_id>', methods=['GET', 'POST'])
 def item(item_id):
     conn = get_db()

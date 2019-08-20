@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% macro breadcrumb(crumbs) %}
+{% macro breadcrumb(crumbs, is_leaf=False) %}
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         {% for (name, link) in crumbs %}
-            {% if loop.last %}
+            {% if loop.last and is_leaf %}
                 <li class="breadcrumb-item active }}" aria-current="page">{{ name | title }}</li>
             {% else %}
                 <li class="breadcrumb-item"><a href="{{ link }}">{{ name | title }}</a></li>
@@ -15,18 +15,87 @@
 {% endmacro %}
 
 {% block content %}
+    <script>
+        $(function() {
+            $('.js-typeahead').typeahead({
+                order: "asc",
+                source: {
+                    groupName: {
+                        ajax: {
+                            url: '{{ url_for('typeahead') }}',
+                            method: 'GET',
+                        }
+                    }
+                },
+                callback: {
+                    onInit: function () {}
+                },
+                mustSelectItem: true,  // only from predefined items
+                hint: true,  // show inline gray autocomplete
+                accent: true,  // ignore accents 
+                cache: true,  // cache results in localstorage
+                {% raw %}
+                template: '{{display}}, {{id}}',
+                {% endraw %}
+                onSubmit: function(node, form, item, event) {
+                    console.log(item);
+                },
+                onClickAfter: function(node, form, item, event) {
+                    console.log('afer');
+                    form.submit();
+                },
+            });
+        });
+    </script>
+
     <h1>{{ main_item.name}}</h1>
 
-    {% for bc in main_item.all_breadcrumbs() %}
-        {{ breadcrumb(bc) }}
-    {% endfor %}
+    <div class="row">
+        <div class="col-8">
+            {% for bc in main_item.all_breadcrumbs() %}
+                {{ breadcrumb(bc) }}
+            {% endfor %}
 
-    <table>
-        {% for tag in main_item.tags if ':' not in tag %}
-        <tr>
-            <th>{{ tag | title }}</th>
-            <td>{{ main_item.tags[tag] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+            <table>
+                {% for tag in main_item.tags if ':' not in tag %}
+                <tr>
+                    <th>{{ tag | title }}</th>
+                    <td>{{ main_item.tags[tag] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <h2>My Opinion</h2>
+            <div class="row">
+                <div class="col">
+                    <h3>Better</h3>
+                    I prefer the following to {{ main_item.name }}
+                    <form method="POST">
+                        <div class="typeahead__container">
+                            <div class="typeahead__field">
+                                <div class="typeahead__query">
+                                    <input class="js-typeahead"
+                                           name="better"
+                                           type="search"
+                                           autocomplete="off">
+                                </div>
+                                <div class="typeahead__button">
+                                    <button type="submit">
+                                        <span class="typeahead__search-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col">
+                    <h3>Worse</h3>
+                    I prefer {{ main_item.name }} to
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h2>Recommended Alternatives</h2>
+        </div>
+    </div>
 {% endblock %}

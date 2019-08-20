@@ -3,7 +3,7 @@ import json
 
 import aiosql
 import sqlite3
-from flask import Flask, g, render_template
+from flask import Flask, g, render_template, jsonify, request, redirect, url_for
 
 app = Flask(__name__)
 DATABASE = 'data/data.sqlite3'
@@ -12,6 +12,7 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
+        db.execute("ATTACH DATABASE 'data/user.sqlite3' AS user")
     return db
 
 
@@ -60,8 +61,30 @@ def hello_world():
     return render_template('index.html', items=items)
 
 
-@app.route('/item/<id>')
+@app.route('/item/<id>', methods=['GET', 'POST'])
 def item(id):
     conn = get_db()
     main_item = Item(*conn.execute("SELECT * FROM item WHERE id = ?", [id]).fetchone())
+
+    if request.method == 'POST':
+        # TODO: handle name not unique cases
+        name = request.form['better']
+        item = Item(*conn.execute("SELECT * FROM item WHERE name = ? LIMIT 1", [name]).fetchone())
+        with conn:
+            conn.execute("""
+                INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")
+                VALUES(:user_id, :prefers, :to)
+            """, dict(user_id=1, prefers=item.id, to=main_item.id))
+        return redirect(url_for('item', id=id))
+
     return render_template('item.html', main_item=main_item)
+
+
+@app.route('/json/typeahead')
+def typeahead():
+    conn = get_db()
+    rows = conn.execute("SELECT id, name FROM item")
+    return jsonify([
+        dict(id=r[0], display=r[1])
+        for r in rows
+    ])

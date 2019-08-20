@@ -20,8 +20,27 @@ WHERE prefers.user_id = :user_id
 -- record_class: Item
 SELECT item.*
 FROM item
+ORDER BY coalesce(rank, 'inf')
+
+-- name: start_page_items
+-- record_class: Item
+SELECT item.*
+FROM item
+ORDER BY coalesce(rank, 'inf')
+LIMIT 12;
 
 -- name: save_preference!
--- Remember which of these two items is preferred by the user
+-- Store which of these two items is preferred by the user
 INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")
 VALUES(:user_id, :prefers, :to)
+
+-- name: get_graph
+-- Get graph of preferences for rank calculation
+SELECT prefers AS better, "to" AS worse
+FROM prefers;
+
+-- name: save_rank*!
+-- Save the calculated rank for fast querying
+UPDATE item
+SET rank = :rank
+WHERE item_id = :item_id;

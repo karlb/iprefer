@@ -27,10 +27,12 @@ conn = sqlite3.connect('data/data.sqlite3')
 conn.executescript('''
     DROP TABLE IF EXISTS item;
     CREATE TABLE item(
-        name text,
-        item_id int,
-        tags json
-    )
+        name text NOT NULL,
+        item_id int NOT NULL,
+        tags json,
+        rank float
+    );
+    CREATE INDEX rank_idx ON item(rank);
 ''')
 print(
     conn.executemany(

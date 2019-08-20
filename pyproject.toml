@@ -8,9 +8,11 @@ authors = ["Karl Bartel <karl42@gmail.com>"]
 python = "^3.7"
 aiosql = "^3.0"
 flask = "^1.1"
+networkx = "^2.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
+pygraphviz = "^1.5"
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -2,6 +2,7 @@
 import xml.etree.ElementTree as ET
 import sqlite3
 import json
+from itertools import chain
 
 def get_osm():
     tree = ET.parse('data/export.osm')
@@ -17,7 +18,8 @@ def get_osm():
         yield dict(
             name=tags.pop('name'),
             id=node.get('id'),
-            tags=json.dumps(tags)
+            tags=tags,
+            json_tags=json.dumps(tags)
         )
 
 #for x in get_osm():
@@ -33,12 +35,31 @@ conn.executescript('''
         rank float
     );
     CREATE INDEX rank_idx ON item(rank);
+
+    DROP TABLE IF EXISTS tags;
+    CREATE TABLE tags(
+        item_id int NOT NULL,
+        key text NOT NULL,
+        value text NOT NULL,
+        PRIMARY KEY (item_id, key)
+    );
 ''')
+osm = list(get_osm())
 print(
     conn.executemany(
-        'INSERT INTO item(name, item_id, tags) VALUES (:name, :id, :tags)',
-        list(get_osm())
+        'INSERT INTO item(name, item_id, tags) VALUES (:name, :id, :json_tags)',
+        osm
     ).rowcount,
-    'rows inserted'
+    'items inserted'
+)
+print(
+    conn.executemany(
+        'INSERT INTO tags(item_id, key, value) VALUES (?, ?, ?)',
+        chain.from_iterable(
+            ((item['id'], key, val) for key, val in item['tags'].items())
+            for item in osm
+        )
+    ).rowcount,
+    'tags inserted'
 )
 conn.commit()

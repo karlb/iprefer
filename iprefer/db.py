@@ -3,7 +3,7 @@ import sqlite3
 import json
 
 import aiosql
-from flask import g
+from flask import g, url_for
 
 from .iprefer import app
 
@@ -35,19 +35,20 @@ class Item:
     def __post_init__(self):
         self.tags = json.loads(self.tags)
 
+    def _make_breadcrumb(self, *keys):
+        crumbs = []
+        for key in keys:
+            value = self.tags.get(key)
+            if not value:
+                continue
+            crumbs.append((value, url_for('tag', key=key, value=value)))
+        return crumbs
+
     def location_breadcrumb(self):
-        return [
-            (self.tags.get('addr:country', 'DE'), '#'),  # TODO: default
-            (self.tags.get('addr:city', 'Berlin'), '#'),  # TODO: default
-            (self.tags.get('addr:suburb'), '#'),
-            (self.tags['addr:street'], '#'),
-        ]
+        return self._make_breadcrumb('addr:country', 'addr:city', 'addr:suburb', "addr:street")
 
     def amenity_breadcrumb(self):
-        return [
-            (self.tags['amenity'], '#'),
-            (self.tags['cuisine'], '#'),
-        ]
+        return self._make_breadcrumb('amenity', 'cuisine')
 
     def all_breadcrumbs(self):
         return [

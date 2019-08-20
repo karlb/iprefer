@@ -6,11 +6,16 @@ from .db import get_db, Item, queries
 from .graph import update_rank
 
 
-
 @app.route('/')
 def index():
     conn = get_db()
     return render_template('index.html', items=queries.start_page_items(conn))
+
+
+@app.route('/tag/<key>/<value>')
+def tag(key, value):
+    conn = get_db()
+    return render_template('index.html', items=queries.tag_items(conn, key=key, value=value))
 
 
 @app.route('/item/<item_id>', methods=['GET', 'POST'])

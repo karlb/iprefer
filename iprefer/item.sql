@@ -29,6 +29,16 @@ FROM item
 ORDER BY coalesce(rank, 'inf')
 LIMIT 12;
 
+-- name: tag_items
+-- record_class: Item
+SELECT item.*
+FROM item
+    JOIN tags USING (item_id)
+WHERE key = :key
+  AND value = :value
+ORDER BY coalesce(rank, 'inf')
+LIMIT 12;
+
 -- name: save_preference!
 -- Store which of these two items is preferred by the user
 INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")

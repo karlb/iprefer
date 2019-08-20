@@ -27,7 +27,7 @@ ORDER BY coalesce(rank, 'inf')
 SELECT item.*
 FROM item
 ORDER BY coalesce(rank, 'inf')
-LIMIT 12;
+LIMIT 16;
 
 -- name: tag_items
 -- record_class: Item
@@ -37,7 +37,7 @@ FROM item
 WHERE key = :key
   AND value = :value
 ORDER BY coalesce(rank, 'inf')
-LIMIT 12;
+LIMIT 16;
 
 -- name: save_preference!
 -- Store which of these two items is preferred by the user

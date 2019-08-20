@@ -9,13 +9,13 @@ from .graph import update_rank
 @app.route('/')
 def index():
     conn = get_db()
-    return render_template('index.html', items=queries.start_page_items(conn))
+    return render_template('index.html', items=queries.start_page_items(conn), category='Berlin')
 
 
 @app.route('/tag/<key>/<value>')
 def tag(key, value):
     conn = get_db()
-    return render_template('index.html', items=queries.tag_items(conn, key=key, value=value))
+    return render_template('index.html', items=queries.tag_items(conn, key=key, value=value), category=value)
 
 
 @app.route('/item/<item_id>', methods=['GET', 'POST'])

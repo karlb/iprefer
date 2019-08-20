@@ -2,17 +2,22 @@
 
 {% macro show_item(item) %}
 <a href="{{ url_for('item', item_id=item.item_id) }}">
-    <div class="card item-card">
+    <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ item.name }}</h5>
-            <p class="card-text">{{ item.tags }}</p>
+            <p class="card-text">{{ item.tags['addr:street'] }}</p>
         </div>
     </div>
 </a>
 {% endmacro %}
 
 {% block content %}
+
+    <h1>Best in {{ category | title }}</h1>
+
+    <div class="card-deck">
     {% for item in items %}
         {{ show_item(item) }}
     {% endfor %}
+    </div>
 {% endblock content %}

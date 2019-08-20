@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% macro breadcrumb(crumbs) %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        {% for (name, link) in crumbs %}
+            {% if loop.last %}
+                <li class="breadcrumb-item active }}" aria-current="page">{{ name | title }}</li>
+            {% else %}
+                <li class="breadcrumb-item"><a href="{{ link }}">{{ name | title }}</a></li>
+            {% endif %}
+        {% endfor %}
+      </ol>
+    </nav>
+{% endmacro %}
+
+{% block content %}
+    <h1>{{ main_item.name}}</h1>
+
+    {% for bc in main_item.all_breadcrumbs() %}
+        {{ breadcrumb(bc) }}
+    {% endfor %}
+
+    <table>
+        {% for tag in main_item.tags if ':' not in tag %}
+        <tr>
+            <th>{{ tag | title }}</th>
+            <td>{{ main_item.tags[tag] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

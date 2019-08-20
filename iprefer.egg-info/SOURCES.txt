@@ -1,0 +1,9 @@
+README.rst
+setup.py
+iprefer/__init__.py
+iprefer/iprefer.py
+iprefer.egg-info/PKG-INFO
+iprefer.egg-info/SOURCES.txt
+iprefer.egg-info/dependency_links.txt
+iprefer.egg-info/requires.txt
+iprefer.egg-info/top_level.txt

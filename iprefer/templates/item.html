@@ -116,6 +116,12 @@
         </div>
         <div class="col">
             <h2>Recommended Alternatives</h2>
+            <div class="card-deck">
+            <ul>
+                {% for item in alternatives %}
+                    <li>{{ short_item(item) }}</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 {% endblock %}

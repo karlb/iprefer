@@ -54,9 +54,16 @@ def item(item_id):
 
         return redirect(url_for('item', item_id=item_id))
 
-    better = queries.better(conn, user_id=user_id, item_id=main_item.item_id)
-    worse = queries.worse(conn, user_id=user_id, item_id=main_item.item_id)
-    return render_template('item.html', main_item=main_item, better=better, worse=worse)
+    better = queries.better(conn, user_id=user_id, item_id=item_id)
+    worse = queries.worse(conn, user_id=user_id, item_id=item_id)
+    alternatives = queries.alternatives(conn, item_id=item_id)
+    return render_template(
+        'item.html',
+        main_item=main_item,
+        better=better,
+        worse=worse,
+        alternatives=alternatives,
+    )
 
 
 @app.route('/json/typeahead')

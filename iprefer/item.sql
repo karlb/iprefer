@@ -47,6 +47,23 @@ WHERE name LIKE '%' || :term || '%'
 ORDER BY coalesce(rank, 'inf')
 LIMIT 16;
 
+-- name: alternatives
+-- record_class: Item
+-- Get recommended alternatives to given item
+SELECT item.*
+FROM item
+    JOIN (
+        SELECT alternative.item_id, count(*) similarity
+        FROM tags main_item
+            JOIN tags alternative USING (key, value)
+        WHERE main_item.item_id = :item_id
+          AND key IN ('addr:suburb', 'addr:street', 'amenity', 'cuisine')
+          AND alternative.item_id != main_item.item_id
+        GROUP BY 1
+    ) USING (item_id)
+ORDER BY 1/coalesce(rank, 0.3) * similarity DESC
+LIMIT 10;
+
 -- name: save_preference!
 -- Store which of these two items is preferred by the user
 INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")

@@ -1,6 +1,7 @@
 CREATE TABLE user(
     user_id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    google_id INT NOT NULL,
 );
 
 CREATE TABLE prefers(

@@ -1,9 +1,48 @@
-from flask import Flask, g, render_template, jsonify, request, redirect, url_for
+import os
+
+from flask import Flask, g, render_template, jsonify, request, redirect, url_for, session
+from flask_dance.contrib.google import make_google_blueprint, google
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('FLASK_SECRET', 'dev')
 
-from .db import get_db, Item, queries
+# Google login
+blueprint = make_google_blueprint(
+    client_id=os.environ.get('GOOGLE_OAUTH_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET'),
+)
+app.register_blueprint(blueprint, url_prefix="/login")
+
+from .db import get_db, Item, queries, user_queries
 from .graph import update_rank
+
+
+@app.before_request
+def add_user_to_session():
+    if 'user' in session:
+        # no need to fetch the user, again
+        return
+    if not google.authorized:
+        # can't fetch the user when not logged in
+        return
+
+    try:
+        resp = google.get("/oauth2/v1/userinfo")
+        assert resp.ok, resp.text
+    except Exception:
+        session['user'] = None
+        return
+    google_user = resp.json()
+
+    conn = get_db()
+    user_queries.add_user(
+        conn,
+        google_id=google_user['id'],
+        name=google_user['name'],
+    )
+    db_user = user_queries.get_user(conn, google_id=google_user['id'])
+    print(db_user, '<<<')
+    session['user'] = db_user
 
 
 @app.route('/')
@@ -32,7 +71,7 @@ def search():
 def item(item_id):
     conn = get_db()
     main_item = Item(*conn.execute("SELECT * FROM item WHERE item_id = ?", [item_id]).fetchone())
-    user_id = 1
+    user_id = session['user'].user_id
 
     if request.method == 'POST':
         # TODO: handle name not unique cases

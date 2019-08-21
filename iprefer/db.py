@@ -57,5 +57,13 @@ class Item:
         ]
 
 
+@dataclass
+class User:
+    user_id: int
+    name: str
+    google_id: int
+
+
 queries = aiosql.from_path("iprefer/item.sql", "sqlite3", record_classes=dict(Item=Item))
+user_queries = aiosql.from_path("iprefer/user.sql", "sqlite3", record_classes=dict(User=User))
 

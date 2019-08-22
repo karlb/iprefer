@@ -68,7 +68,7 @@ def make_blueprint(dataset: str) -> Blueprint:
 
         return render_template('item.html', **ctx)
 
-    @bp.route('/item/<item_id>/remove/<remove_item_id>', methods=['POST', 'GET'])  # TODO: no GET
+    @bp.route('/item/<item_id>/remove/<remove_item_id>', methods=['POST'])
     def remove_prefer(item_id, remove_item_id):
         conn = get_db()
         with conn:

@@ -104,6 +104,14 @@ def item(item_id):
     return render_template('item.html', **ctx)
 
 
+@bp.route('/item/<item_id>/remove/<remove_item_id>', methods=['POST', 'GET'])  # TODO: no GET
+def remove_prefer(item_id, remove_item_id):
+    conn = get_db()
+    with conn:
+        queries.remove_prefer(conn, user_id=g.user.user_id, item_id=item_id, remove_item_id=remove_item_id)
+    return redirect(url_for('.item', item_id=item_id))
+
+
 @bp.route('/json/typeahead')
 def typeahead():
     conn = get_db()

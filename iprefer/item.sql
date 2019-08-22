@@ -69,6 +69,15 @@ LIMIT 10;
 INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")
 VALUES(:user_id, :prefers, :to)
 
+-- name: remove_prefer!
+DELETE FROM user.prefers
+WHERE user_id = :user_id
+  AND (
+    (prefers, "to") = (:item_id, :remove_item_id)
+    OR
+    ("to", prefers) = (:item_id, :remove_item_id)
+)
+
 -- name: get_graph
 -- Get graph of preferences for rank calculation
 SELECT prefers AS better, "to" AS worse

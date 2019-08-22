@@ -47,7 +47,10 @@
     </form>
     <ul>
     {% for item in items %}
-        <li>{{ short_item(item) }}</li>
+        <li>
+            {{ short_item(item) }}
+            <a href="{{ url_for('.remove_prefer', item_id=main_item.item_id, remove_item_id=item.item_id) }}">x</a>
+        </li>
     {% endfor %}
     </ul>
 {% endmacro %}

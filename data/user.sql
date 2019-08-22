@@ -11,3 +11,6 @@ CREATE TABLE prefers(
     updated TIMESTAMPT DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, prefers, "to")
 );
+-- The same item can't be both better and worse
+CREATE UNIQUE INDEX prevent_contradiction_idx
+    ON prefers(user_id, min(prefers, "to"), max(prefers, "to"));

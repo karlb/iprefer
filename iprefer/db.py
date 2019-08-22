@@ -5,7 +5,7 @@ import json
 import aiosql
 from flask import g, url_for
 
-from .iprefer import APP_ROOT
+from iprefer import APP_ROOT
 
 DATABASE = APP_ROOT + '/../data/data.sqlite3'
 USER_DATABASE = APP_ROOT + '/../data/user.sqlite3'

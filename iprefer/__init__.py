@@ -3,10 +3,13 @@ import os
 from flask import Flask
 from flask_dance.contrib.google import make_google_blueprint, google
 
-from .iprefer import bp as data_bp
-from .db import close_connection
-
 __version__ = '0.1.0'
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+from .iprefer import bp as main_bp
+from .db import close_connection
+from . import dataset
 
 
 def create_app(test_config=None):
@@ -32,8 +35,10 @@ def create_app(test_config=None):
     # db teardown
     app.teardown_appcontext(close_connection)
 
-    # main bluepring
-    app.register_blueprint(data_bp, url_prefix="/")
+    # local blueprints
+    app.register_blueprint(main_bp, url_prefix="/")
+    for ds in ['restaurants', 'software']:
+        app.register_blueprint(dataset.make_blueprint(ds), url_prefix="/" + ds)
 
     # Google login
     blueprint = make_google_blueprint(

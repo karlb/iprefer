@@ -41,7 +41,7 @@ class Item:
             value = self.tags.get(key)
             if not value:
                 continue
-            crumbs.append((value, url_for('tag', key=key, value=value)))
+            crumbs.append((value, url_for('.tag', key=key, value=value)))
         return crumbs
 
     def location_breadcrumb(self):

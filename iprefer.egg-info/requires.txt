@@ -1,4 +1,4 @@
-aiosql>=3.0,<4.0
-flask-dance>=2.2,<3.0
-flask>=1.1,<2.0
-networkx>=2.3,<3.0
+aiosql<4.0,>=3.0
+flask-dance<3.0,>=2.2
+flask<2.0,>=1.1
+networkx<3.0,>=2.3

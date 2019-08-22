@@ -5,20 +5,20 @@ import json
 import aiosql
 from flask import g, url_for
 
-from .iprefer import app
+from .iprefer import APP_ROOT
 
-DATABASE = 'data/data.sqlite3'
+DATABASE = APP_ROOT + '/../data/data.sqlite3'
+USER_DATABASE = APP_ROOT + '/../data/user.sqlite3'
 
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
-        db.execute("ATTACH DATABASE 'data/user.sqlite3' AS user")
+        db.execute(f"ATTACH DATABASE '{USER_DATABASE}' AS user")
     return db
 
 
-@app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
@@ -64,6 +64,6 @@ class User:
     google_id: int
 
 
-queries = aiosql.from_path("iprefer/item.sql", "sqlite3", record_classes=dict(Item=Item))
-user_queries = aiosql.from_path("iprefer/user.sql", "sqlite3", record_classes=dict(User=User))
+queries = aiosql.from_path(APP_ROOT + "/item.sql", "sqlite3", record_classes=dict(Item=Item))
+user_queries = aiosql.from_path(APP_ROOT + "/user.sql", "sqlite3", record_classes=dict(User=User))
 

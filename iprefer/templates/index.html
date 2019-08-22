@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% macro show_item(item) %}
-<a href="{{ url_for('item', item_id=item.item_id) }}">
+<a href="{{ url_for('.item', item_id=item.item_id) }}">
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">{{ item.name }}</h5>

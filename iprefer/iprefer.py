@@ -1,23 +1,17 @@
 import os
 
-from flask import Flask, g, render_template, jsonify, request, redirect, url_for, session
+from flask import Flask, g, render_template, jsonify, request, redirect, url_for, session, Blueprint
 from flask_dance.contrib.google import make_google_blueprint, google
 
-app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET', 'dev')
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+bp = Blueprint('data', __name__)
 
-# Google login
-blueprint = make_google_blueprint(
-    client_id=os.environ.get('GOOGLE_OAUTH_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET'),
-)
-app.register_blueprint(blueprint, url_prefix="/login")
 
 from .db import get_db, Item, queries, user_queries
 from .graph import update_rank
 
 
-@app.before_request
+@bp.before_request
 def add_user_to_session():
     if 'user' in session:
         # no need to fetch the user, again
@@ -30,7 +24,7 @@ def add_user_to_session():
         resp = google.get("/oauth2/v1/userinfo")
         assert resp.ok, resp.text
     except Exception:
-        session['user'] = None
+        del session['user']
         return
     google_user = resp.json()
 
@@ -45,19 +39,19 @@ def add_user_to_session():
     session['user'] = db_user
 
 
-@app.route('/')
+@bp.route('/')
 def index():
     conn = get_db()
     return render_template('index.html', items=queries.start_page_items(conn), category='Berlin')
 
 
-@app.route('/tag/<key>/<value>')
+@bp.route('/tag/<key>/<value>')
 def tag(key, value):
     conn = get_db()
     return render_template('index.html', items=queries.tag_items(conn, key=key, value=value), category=value)
 
 
-@app.route('/search')
+@bp.route('/search')
 def search():
     conn = get_db()
     return render_template(
@@ -67,7 +61,7 @@ def search():
     )
 
 
-@app.route('/item/<item_id>', methods=['GET', 'POST'])
+@bp.route('/item/<item_id>', methods=['GET', 'POST'])
 def item(item_id):
     conn = get_db()
     main_item = Item(*conn.execute("SELECT * FROM item WHERE item_id = ?", [item_id]).fetchone())
@@ -91,7 +85,7 @@ def item(item_id):
             )
             update_rank(conn)
 
-        return redirect(url_for('item', item_id=item_id))
+        return redirect(url_for('.item', item_id=item_id))
 
     better = queries.better(conn, user_id=user_id, item_id=item_id)
     worse = queries.worse(conn, user_id=user_id, item_id=item_id)
@@ -105,7 +99,7 @@ def item(item_id):
     )
 
 
-@app.route('/json/typeahead')
+@bp.route('/json/typeahead')
 def typeahead():
     conn = get_db()
     items = queries.all_items(conn)

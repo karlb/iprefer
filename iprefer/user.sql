@@ -1,7 +1,6 @@
 -- name: add_user!
-INSERT INTO user(name, google_id)
-VALUES (:name, :google_id)
-ON CONFLICT DO NOTHING;
+INSERT OR IGNORE INTO user(name, google_id)
+VALUES (:name, :google_id);
 
 
 -- name: get_user^

@@ -15,6 +15,7 @@ def add_user_to_g():
     if 'google_user_id' in session:
         # We know the user, let's just fetch the User object from the db
         g.user = user_queries.get_user(conn, google_id=session['google_user_id'])
+        print('a')
         return
     if not google.authorized:
         # Can't fetch the user when not logged in
@@ -38,9 +39,10 @@ def add_user_to_g():
         )
 
     session['google_user_id'] = google_user['id']
+    print('b')
     g.user = user_queries.get_user(conn, google_id=google_user['id'])
 
 
 @bp.route('/')
 def index():
-    return redirect(url_for('dataset.index'))
+    return redirect(url_for('dataset-restaurants.index'))

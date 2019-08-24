@@ -78,7 +78,7 @@
                 mustSelectItem: true,  // only from predefined items
                 hint: true,  // show inline gray autocomplete
                 accent: true,  // ignore accents 
-                cache: true,  // cache results in localstorage
+                //cache: true,  // cache results in localstorage
                 display: 'name',  // attribute to use as match
                 {% raw %}
                 template: '{{name}}, {{street}}',
@@ -94,7 +94,7 @@
         });
     </script>
 
-    <h1>{{ main_item.name}}</h1>
+    <h1>{{ main_item.name }}</h1>
 
     <div class="row">
         <div class="col-8">
@@ -103,10 +103,14 @@
             {% endfor %}
 
             <table>
-                {% for tag in main_item.tags if ':' not in tag %}
+                {% for key, values in tags.items() if ':' not in key %}
                 <tr>
-                    <th>{{ tag | title }}</th>
-                    <td>{{ main_item.tags[tag] }}</td>
+                    <th>{{ key | title }}</th>
+                    <td>
+                        {% for val in values %}
+                            {{ val + (', ' if not loop.last else '') }}
+                        {% endfor %}
+                    </td>
                 </tr>
                 {% endfor %}
             </table>

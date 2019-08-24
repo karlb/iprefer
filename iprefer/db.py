@@ -53,8 +53,8 @@ class Item:
 
     def all_breadcrumbs(self):
         return [
-            self.location_breadcrumb(),
-            self.amenity_breadcrumb(),
+            # self.location_breadcrumb(),
+            # self.amenity_breadcrumb(),
         ]
 
 

@@ -47,6 +47,12 @@ WHERE name LIKE '%' || :term || '%'
 ORDER BY coalesce(rank, 'inf')
 LIMIT 16;
 
+-- name: tags
+SELECT key, json_group_array(value)
+FROM tags
+WHERE item_id = :item_id
+GROUP BY key;
+
 -- name: alternatives
 -- record_class: Item
 -- Get recommended alternatives to given item

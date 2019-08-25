@@ -21,7 +21,7 @@ def make_blueprint(dataset: str) -> Blueprint:
 
     @bp.route('/')
     def index():
-        return render_template('index.html', items=queries.start_page_items(g.db), category='Berlin')
+        return render_template('index.html', items=queries.start_page_items(g.db), category=dataset)
 
     @bp.route('/tag/<key>/<value>')
     def tag(key, value):

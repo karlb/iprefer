@@ -108,7 +108,8 @@
                     <th>{{ key | title }}</th>
                     <td>
                         {% for val in values %}
-                            {{ val + (', ' if not loop.last else '') }}
+                        <a href="{{ url_for('.tag', key=key, value=val) }}">{{ val }}</a>
+                          {{ ', ' if not loop.last }}
                         {% endfor %}
                     </td>
                 </tr>

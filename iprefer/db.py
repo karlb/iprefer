@@ -7,21 +7,24 @@ from flask import g, url_for
 
 from iprefer import APP_ROOT
 
-DATABASE = APP_ROOT + '/../data/data.sqlite3'
 USER_DATABASE = APP_ROOT + '/../data/user.sqlite3'
 
 
 def get_db():
-    db = getattr(g, '_database', None)
+    db = getattr(g, '_user_db', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.execute(f"ATTACH DATABASE '{USER_DATABASE}' AS user")
+        db = g._database = sqlite3.connect(USER_DATABASE)
         db.execute("PRAGMA foreign_keys = ON")
+        if not db.execute(
+                "SELECT name from sqlite_master WHERE type='table' AND name='user'"
+                ).fetchone():
+            with db:
+                user_queries.create_schema(db)
     return db
 
 
 def close_connection(exception):
-    db = getattr(g, '_database', None)
+    db = getattr(g, '_user_db', None)
     if db is not None:
         db.close()
 
@@ -48,7 +51,7 @@ class Item:
         }
         crumbs = []
         for key in keys:
-            value = tags.get(key)[0]
+            value = tags.get(key, [None])[0]
             if not value:
                 continue
             crumbs.append((value, url_for('.tag', key=key, value=value)))

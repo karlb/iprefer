@@ -117,6 +117,7 @@
             </table>
 
             <h2>My Opinion</h2>
+            {% if g.user %}
             <div class="row">
                 <div class="col">
                     {{ opinion('better', better) }}
@@ -125,6 +126,11 @@
                     {{ opinion('worse', worse) }}
                 </div>
             </div>
+            {% else %}
+            <p>
+                Please log in to compare entries and get improved recommendations.
+            </p>
+            {% endif %}
         </div>
         <div class="col">
             <h2>Recommended Alternatives</h2>

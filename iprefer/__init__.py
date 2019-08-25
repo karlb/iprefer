@@ -33,12 +33,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # db teardown
-    app.teardown_appcontext(close_connection)
-
-    # user handling
-    app.before_request(add_user_to_g)
-
     # local blueprints
     app.register_blueprint(main_bp, url_prefix="/")
     for ds in ['restaurants', 'software']:
@@ -50,6 +44,12 @@ def create_app(test_config=None):
 	client_secret=app.config.get('GOOGLE_OAUTH_CLIENT_SECRET'),
     )
     app.register_blueprint(blueprint, url_prefix="/login")
+
+    # user handling
+    app.before_request(add_user_to_g)
+
+    # db teardown
+    app.teardown_appcontext(close_connection)
 
     # cli commands for admins
     app.cli.add_command(importer_cli)

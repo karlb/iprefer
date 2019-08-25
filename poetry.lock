@@ -131,7 +131,7 @@ docs = ["sphinx", "rst.linker"]
 testing = ["importlib-resources"]
 
 [[package]]
-category = "dev"
+category = "main"
 description = "An ISO 8601 date/time/duration parser and formatter"
 name = "isodate"
 optional = false
@@ -247,7 +247,7 @@ python-versions = "*"
 version = "1.5"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Python parsing module"
 name = "pyparsing"
 optional = false
@@ -273,7 +273,7 @@ setuptools = "*"
 six = ">=1.10.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "RDFLib is a Python library for working with RDF, a simple yet powerful language for representing information."
 name = "rdflib"
 optional = false
@@ -330,7 +330,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "1.12.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "SPARQL Endpoint interface to Python"
 name = "sparqlwrapper"
 optional = false
@@ -390,7 +390,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "158d10dd34b0258d85c5b67203458fdff55581f73af55f7c1d4ae10f30c3c894"
+content-hash = "5b4338338db727be706f79d232c9c39548e1a9e11b7e0ba53cc54a7c7a93f2fd"
 python-versions = "^3.7"
 
 [metadata.hashes]

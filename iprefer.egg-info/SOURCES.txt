@@ -1,6 +1,7 @@
 README.rst
 setup.py
 iprefer/__init__.py
+iprefer/dataset.py
 iprefer/db.py
 iprefer/graph.py
 iprefer/iprefer.py
@@ -11,6 +12,10 @@ iprefer.egg-info/SOURCES.txt
 iprefer.egg-info/dependency_links.txt
 iprefer.egg-info/requires.txt
 iprefer.egg-info/top_level.txt
+iprefer/importer/__init__.py
+iprefer/importer/dataset.sql
+iprefer/importer/osm.py
+iprefer/importer/wikidata.py
 iprefer/static/style.css
 iprefer/static/lib/typeahead/LICENSE
 iprefer/static/lib/typeahead/jquery.typeahead.min.css

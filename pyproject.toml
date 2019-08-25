@@ -10,6 +10,7 @@ aiosql = "^3.0"
 flask = "^1.1"
 networkx = "^2.3"
 flask-dance = "^2.2"
+sparqlwrapper = "^1.8.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

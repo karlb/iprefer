@@ -10,6 +10,7 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 from .iprefer import bp as main_bp
 from .db import close_connection, get_db, user_queries
 from . import dataset
+from .importer import importer_cli
 
 
 def create_app(test_config=None):
@@ -49,6 +50,9 @@ def create_app(test_config=None):
 	client_secret=app.config.get('GOOGLE_OAUTH_CLIENT_SECRET'),
     )
     app.register_blueprint(blueprint, url_prefix="/login")
+
+    # cli commands for admins
+    app.cli.add_command(importer_cli)
 
     return app
 

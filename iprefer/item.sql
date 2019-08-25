@@ -53,6 +53,13 @@ FROM tags
 WHERE item_id = :item_id
 GROUP BY key;
 
+-- name: tag
+-- record_class: scalar
+SELECT value
+FROM tags
+WHERE item_id = :item_id
+  AND key = :key;
+
 -- name: alternatives
 -- record_class: Item
 -- Get recommended alternatives to given item

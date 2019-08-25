@@ -16,7 +16,7 @@
 
 
 {% macro short_item(item) %}
-    <a href="{{ url_for('.item', item_id=item.item_id) }}">{{item.name}}, {{item.tags['addr:street']}}</a>
+    <a href="{{ url_for('.item', item_id=item.item_id) }}">{{item.name}}, {{ item.detail }}</a>
 {% endmacro %}
 
 {% macro opinion(better_or_worse, items) %}

@@ -30,16 +30,25 @@ def close_connection(exception):
 class Item:
     name: str
     item_id: int
-    tags: dict
     rank: float
 
-    def __post_init__(self):
-        self.tags = json.loads(self.tags)
+    def tag(self, key):
+        return queries.tag(g.db, item_id=self.item_id, key=key)
+
+    @property
+    def detail(self):
+        if g.dataset == 'restaurants':
+            values = self.tag('addr:street')
+            return values[0] if values else None
 
     def _make_breadcrumb(self, *keys):
+        tags = {
+            key: json.loads(values)
+            for key, values in queries.tags(g.db, item_id=self.item_id)
+        }
         crumbs = []
         for key in keys:
-            value = self.tags.get(key)
+            value = tags.get(key)[0]
             if not value:
                 continue
             crumbs.append((value, url_for('.tag', key=key, value=value)))
@@ -52,10 +61,13 @@ class Item:
         return self._make_breadcrumb('amenity', 'cuisine')
 
     def all_breadcrumbs(self):
-        return [
-            # self.location_breadcrumb(),
-            # self.amenity_breadcrumb(),
-        ]
+        if g.dataset == 'restaurants':
+            return [
+                self.location_breadcrumb(),
+                self.amenity_breadcrumb(),
+            ]
+        else:
+            return []
 
 
 @dataclass
@@ -65,6 +77,13 @@ class User:
     google_id: int
 
 
-queries = aiosql.from_path(APP_ROOT + "/item.sql", "sqlite3", record_classes=dict(Item=Item))
+queries = aiosql.from_path(
+    APP_ROOT + "/item.sql",
+    "sqlite3",
+    record_classes=dict(
+        Item=Item,
+        scalar=lambda value: value,
+    )
+)
 user_queries = aiosql.from_path(APP_ROOT + "/user.sql", "sqlite3", record_classes=dict(User=User))
 

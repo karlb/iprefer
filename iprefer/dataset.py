@@ -19,6 +19,10 @@ def make_blueprint(dataset: str) -> Blueprint:
         g.db.execute(f"ATTACH DATABASE '{USER_DATABASE}' AS user")
         g.db.execute("PRAGMA foreign_keys = ON")
 
+    @bp.before_request
+    def set_dataset():
+        g.dataset = dataset
+
     @bp.route('/')
     def index():
         return render_template('index.html', items=queries.start_page_items(g.db), category=dataset)

@@ -91,7 +91,7 @@ def make_blueprint(dataset: str) -> Blueprint:
     def typeahead():
         items = queries.all_items(g.db)
         return jsonify([
-            dict(name=i.name, item_id=i.item_id)
+            dict(name=i.name, item_id=i.item_id, detail=i.detail)
             for i in items
         ])
 

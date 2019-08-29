@@ -13,6 +13,9 @@ from . import dataset
 from .importer import importer_cli
 
 
+datasets = ['restaurants', 'software']
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -35,7 +38,7 @@ def create_app(test_config=None):
 
     # local blueprints
     app.register_blueprint(main_bp, url_prefix="/")
-    for ds in ['restaurants', 'software']:
+    for ds in datasets:
         app.register_blueprint(dataset.make_blueprint(ds), url_prefix="/" + ds)
 
     # Google login
@@ -46,7 +49,7 @@ def create_app(test_config=None):
     app.register_blueprint(blueprint, url_prefix="/login")
 
     # user handling
-    app.before_request(add_user_to_g)
+    app.before_request(add_globals)
 
     # db teardown
     app.teardown_appcontext(close_connection)
@@ -55,6 +58,11 @@ def create_app(test_config=None):
     app.cli.add_command(importer_cli)
 
     return app
+
+
+def add_globals():
+    add_user_to_g()
+    g.datasets = datasets
 
 
 def add_user_to_g():

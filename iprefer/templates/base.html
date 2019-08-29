@@ -32,12 +32,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                    {% for ds in g.datasets%}
+                    <li class="nav-item {{ 'active' if 'dataset-' + ds == request.blueprint }}">
+                        <a class="nav-link" href="{{ url_for('dataset-' + ds + '.index') }}">{{ ds | title }}</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
+                    {% endfor %}
                     <li class="nav-item">
                         {% if g.user %}
                             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{{ g.user.name}}</a>

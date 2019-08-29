@@ -1,11 +1,24 @@
+from typing import Dict
+
 import networkx as nx
 
 from .db import queries
 
-def update_rank(conn):
+
+Ranking = Dict[str, float]
+
+
+def load_graph(conn) -> nx.DiGraph:
     G = nx.DiGraph()
-    G.add_edges_from(queries.get_graph(conn))
-    pagerank = nx.pagerank(G)
+    G.add_weighted_edges_from(queries.get_graph(conn))
+    return G
+
+
+def calc_rank(G: nx.DiGraph) -> Ranking:
+    return nx.pagerank(G)
+
+
+def save_rank(conn, rank: Ranking):
     queries.save_rank(
         conn,
         (
@@ -13,6 +26,12 @@ def update_rank(conn):
             for node, rank in pagerank.items()
         )
     )
+
+
+def update_rank(conn):
+    G = load_graph(conn)
+    pagerank = calc_rank(G)
+    save_rank(conn, G)
 
     # Debugging:
     # nx.drawing.nx_agraph.write_dot(G, 'graph.dot')

@@ -3,3 +3,6 @@ syntax: glob
 __pycache__
 data/user.sqlite3
 instance
+dist/
+failed_graph.dot
+.pytest_cache/

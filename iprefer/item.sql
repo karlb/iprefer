@@ -79,11 +79,11 @@ LIMIT 10;
 
 -- name: save_preference!
 -- Store which of these two items is preferred by the user
-INSERT OR REPLACE INTO user.prefers(user_id, prefers, "to")
+INSERT OR REPLACE INTO prefers(user_id, prefers, "to")
 VALUES(:user_id, :prefers, :to)
 
 -- name: remove_prefer!
-DELETE FROM user.prefers
+DELETE FROM prefers
 WHERE user_id = :user_id
   AND (
     (prefers, "to") = (:item_id, :remove_item_id)
@@ -93,8 +93,9 @@ WHERE user_id = :user_id
 
 -- name: get_graph
 -- Get graph of preferences for rank calculation
-SELECT prefers AS better, "to" AS worse
-FROM prefers;
+SELECT prefers AS better, "to" AS worse, count(*) AS count
+FROM prefers
+GROUP BY 1, 2;
 
 -- name: save_rank*!
 -- Save the calculated rank for fast querying

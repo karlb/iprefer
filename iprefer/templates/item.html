@@ -21,11 +21,11 @@
 
 {% macro opinion(better_or_worse, items) %}
     {% if better_or_worse == 'better' %}
-        <h3>Better</h3>
-        I prefer the following to {{ main_item.name }}
+        <h3>I prefer</h3>
+        &hellip;the following to {{ main_item.name }}
     {% else %}
-        <h3>Worse</h3>
-        I prefer {{ main_item.name }} to
+        <h3>I dislike</h3>
+        &hellip;the following compared to {{ main_item.name }}
     {% endif %}
     <form method="POST">
         <div class="typeahead__container">
@@ -121,6 +121,9 @@
             <div class="row">
                 <div class="col">
                     {{ opinion('better', better) }}
+                </div>
+                <div class="col-md-auto pl-1 pr-1" style="font-size: 1000%; transform: scaleX(0.3)">
+                    &gt;
                 </div>
                 <div class="col">
                     {{ opinion('worse', worse) }}

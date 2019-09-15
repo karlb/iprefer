@@ -93,9 +93,22 @@ WHERE user_id = :user_id
 
 -- name: get_graph
 -- Get graph of preferences for rank calculation
-SELECT prefers AS better, "to" AS worse, count(*) AS count
-FROM prefers
-GROUP BY 1, 2;
+SELECT
+    CASE WHEN net_count > 0 THEN prefers ELSE "to" END AS prefers,
+    CASE WHEN net_count > 0 THEN "to" ELSE prefers END AS "to",
+    abs(net_count) AS net_count
+FROM (
+    SELECT prefers, "to", sum(cnt) AS net_count
+    FROM (
+        SELECT
+            CASE WHEN prefers < "to" THEN prefers ELSE "to" END AS prefers,
+            CASE WHEN prefers < "to" THEN "to" ELSE prefers END AS "to",
+            CASE WHEN prefers < "to" THEN 1 ELSE -1 END AS cnt
+        FROM prefers
+    )
+    GROUP BY 1, 2
+)
+WHERE net_count != 0;
 
 -- name: save_rank*!
 -- Save the calculated rank for fast querying

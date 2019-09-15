@@ -32,6 +32,3 @@ def update_rank(conn):
     G = load_graph(conn)
     pagerank = calc_rank(G)
     save_rank(conn, G)
-
-    # Debugging:
-    # nx.drawing.nx_agraph.write_dot(G, 'graph.dot')

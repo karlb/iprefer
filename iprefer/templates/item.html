@@ -22,11 +22,31 @@
 {% macro opinion(better_or_worse, items) %}
     {% if better_or_worse == 'better' %}
         <h3>I prefer</h3>
-        &hellip;the following to {{ main_item.name }}
+        <p class="text-muted">
+            &hellip;the following to {{ main_item.name }}:
+        <p>
     {% else %}
         <h3>I dislike</h3>
-        &hellip;the following compared to {{ main_item.name }}
+        <p class="text-muted">
+            &hellip;the following compared to {{ main_item.name }}:
+        </p>
     {% endif %}
+    <ul>
+    {% for item in items %}
+        <li>
+            {{ short_item(item) }}
+            <form action="{{ url_for('.remove_prefer', item_id=main_item.item_id, remove_item_id=item.item_id) }}" style="display: inline" method="POST">
+                <button type="submit" class="close" aria-label="Dismiss">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </form>
+        </li>
+    {% else %}
+        <p class="text-muted">
+            Add a {{ g.dataset.item }} now using the seach box below
+        <p>
+    {% endfor %}
+    </ul>
     <form method="POST">
         <div class="typeahead__container">
             <div class="typeahead__field">
@@ -45,18 +65,6 @@
             </div>
         </div>
     </form>
-    <ul>
-    {% for item in items %}
-        <li>
-            {{ short_item(item) }}
-            <form action="{{ url_for('.remove_prefer', item_id=main_item.item_id, remove_item_id=item.item_id) }}" style="display: inline" method="POST">
-                <button type="submit" class="close" aria-label="Dismiss">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </form>
-        </li>
-    {% endfor %}
-    </ul>
 {% endmacro %}
 
 {% block content %}

@@ -9,13 +9,13 @@ from .db import Item, queries, user_queries, USER_DATABASE
 from .graph import update_rank
 
 
-def make_blueprint(dataset: str) -> Blueprint:
+def make_blueprint(dataset: dict) -> Blueprint:
 
-    bp = Blueprint('dataset-' + dataset, __name__)
+    bp = Blueprint('dataset-' + dataset['id'], __name__)
 
     @bp.before_request
     def open_db():
-        g.db = sqlite3.connect(f'{app.instance_path}/{dataset}.sqlite3')
+        g.db = sqlite3.connect(f"{app.instance_path}/{dataset['id']}.sqlite3")
         g.db.execute(f"ATTACH DATABASE '{USER_DATABASE}' AS user")
         g.db.execute("PRAGMA foreign_keys = ON")
 
@@ -25,7 +25,7 @@ def make_blueprint(dataset: str) -> Blueprint:
 
     @bp.route('/')
     def index():
-        return render_template('index.html', items=queries.start_page_items(g.db), category=dataset)
+        return render_template('index.html', items=queries.start_page_items(g.db))
 
     @bp.route('/tag/<key>/<value>')
     def tag(key, value):

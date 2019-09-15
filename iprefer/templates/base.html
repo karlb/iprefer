@@ -33,8 +33,8 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
                     {% for ds in g.datasets%}
-                    <li class="nav-item {{ 'active' if 'dataset-' + ds == request.blueprint }}">
-                        <a class="nav-link" href="{{ url_for('dataset-' + ds + '.index') }}">{{ ds | title }}</a>
+                    <li class="nav-item {{ 'active' if 'dataset-' + ds.id == request.blueprint }}">
+                        <a class="nav-link" href="{{ url_for('dataset-' + ds.id + '.index') }}">{{ ds.id | title }}</a>
                     </li>
                     {% endfor %}
                 </ul>

@@ -13,7 +13,16 @@ from . import dataset
 from .importer import importer_cli
 
 
-datasets = ['restaurants', 'software']
+datasets = [
+    {
+        'id': 'restaurants',
+        'item': 'restaurant',
+    },
+    {
+        'id': 'software',
+        'item': 'software',
+    },
+]
 
 
 def create_app(test_config=None):
@@ -39,7 +48,7 @@ def create_app(test_config=None):
     # local blueprints
     app.register_blueprint(main_bp, url_prefix="/")
     for ds in datasets:
-        app.register_blueprint(dataset.make_blueprint(ds), url_prefix="/" + ds)
+        app.register_blueprint(dataset.make_blueprint(ds), url_prefix="/" + ds['id'])
 
     # Google login
     blueprint = make_google_blueprint(

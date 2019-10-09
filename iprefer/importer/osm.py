@@ -20,6 +20,8 @@ def get_osm():
         yield dict(
             name=tags.pop('name')[0],
             item_id=node.get('id'),
+            lat=float(node.get('lat')),
+            lon=float(node.get('lon')),
             tags=tags,
         )
 

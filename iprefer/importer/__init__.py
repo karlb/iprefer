@@ -14,8 +14,10 @@ def save_dataset(filename, items):
     conn = sqlite3.connect(filename)
     queries.create_schema(conn)
     print(
-        conn.executemany(
-            'INSERT INTO item(name, item_id) VALUES (:name, :item_id)',
+        conn.executemany("""
+                INSERT INTO item(name, item_id, lat, lon)
+                VALUES (:name, :item_id, :lat, :lon)
+            """,
             items
         ).rowcount,
         'items inserted'

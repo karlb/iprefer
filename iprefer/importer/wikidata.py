@@ -70,6 +70,8 @@ def get_wikidata():
         dict(
             item_id=result['item']['value'].replace('http://www.wikidata.org/entity/', ''),
             name=result['itemLabel']['value'],
+            lat=None,
+            lon=None,
             tags={
                 tag: result[tag + 's']['value'].split(list_sep)
                 for tag, _ in tag_types

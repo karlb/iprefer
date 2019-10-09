@@ -33,6 +33,8 @@ def close_connection(exception):
 class Item:
     name: str
     item_id: int
+    lat: float
+    lon: float
     rank: float
     tags: dict = '{}'
 

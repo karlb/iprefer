@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS item;
 CREATE TABLE item(
     name text NOT NULL,
     item_id text NOT NULL,
+    lat float,
+    lon float,
     rank float
 );
 CREATE INDEX rank_idx ON item(rank);

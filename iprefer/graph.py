@@ -23,7 +23,7 @@ def save_rank(conn, rank: Ranking):
         conn,
         (
             dict(item_id=node, rank=rank)
-            for node, rank in pagerank.items()
+            for node, rank in rank.items()
         )
     )
 
@@ -31,4 +31,4 @@ def save_rank(conn, rank: Ranking):
 def update_rank(conn):
     G = load_graph(conn)
     pagerank = calc_rank(G)
-    save_rank(conn, G)
+    save_rank(conn, pagerank)

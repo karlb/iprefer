@@ -2,7 +2,7 @@
 -- record_class: Item
 -- Get all items preferred to the given one
 SELECT item.*
-FROM item
+FROM item_with_tags AS item
     JOIN prefers ON (item.item_id = prefers.prefers)
 WHERE prefers.user_id = :user_id
   AND prefers."to" = :item_id
@@ -11,7 +11,7 @@ WHERE prefers.user_id = :user_id
 -- record_class: Item
 -- Get all items which the user deems worse than the given item
 SELECT item.*
-FROM item
+FROM item_with_tags AS item
     JOIN prefers ON (item.item_id = prefers."to")
 WHERE prefers.user_id = :user_id
   AND prefers.prefers = :item_id
@@ -63,8 +63,8 @@ WHERE item_id = :item_id
 -- name: alternatives
 -- record_class: Item
 -- Get recommended alternatives to given item
-SELECT item.*
-FROM item
+SELECT item_with_tags.*
+FROM item_with_tags
     JOIN (
         SELECT alternative.item_id, count(*) similarity
         FROM tags main_item

@@ -34,14 +34,15 @@ class Item:
     name: str
     item_id: int
     rank: float
+    tags: dict = '{}'
 
-    def tag(self, key):
-        return queries.tag(g.db, item_id=self.item_id, key=key)
+    def __post_init__(self):
+        self.tags = json.loads(self.tags)
 
     @property
     def detail(self):
-        if g.dataset == 'restaurants':
-            values = self.tag('addr:street')
+        if g.dataset['id'] == 'restaurants':
+            values = self.tags.get('addr:street')
             return values[0] if values else None
 
     def _make_breadcrumb(self, *keys):

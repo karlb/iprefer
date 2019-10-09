@@ -24,8 +24,8 @@ ORDER BY coalesce(rank, 'inf')
 
 -- name: start_page_items
 -- record_class: Item
-SELECT item.*
-FROM item
+SELECT *
+FROM item_with_tags
 ORDER BY coalesce(rank, 'inf')
 LIMIT 16;
 

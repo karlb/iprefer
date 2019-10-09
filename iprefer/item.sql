@@ -19,7 +19,7 @@ WHERE prefers.user_id = :user_id
 -- name: all_items
 -- record_class: Item
 SELECT item.*
-FROM item
+FROM item_with_tags AS item
 ORDER BY coalesce(rank, 'inf')
 
 -- name: start_page_items

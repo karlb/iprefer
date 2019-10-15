@@ -16,7 +16,7 @@
 
 {% block content %}
 
-    <h1>Best in {{ g.dataset.id | title }}</h1>
+    <h1>Best in {{ (category or g.dataset.id) | title }}</h1>
 
     <div class="card-deck">
     {% for item in items %}

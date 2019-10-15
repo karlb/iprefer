@@ -1,12 +1,28 @@
 import os
 import sqlite3
 import json
+import requests
 
 from flask import Flask, g, render_template, jsonify, request, redirect, url_for, session, Blueprint, current_app as app
 from flask_dance.contrib.google import make_google_blueprint, google
 
 from .db import Item, queries, user_queries, USER_DATABASE
 from .graph import update_rank
+
+
+def cached_external_url(url):
+    cache_entry = g.cache_db.execute("SELECT data FROM cache WHERE url = ?", [url]).fetchone()
+    if cache_entry:
+        return cache_entry[0]
+
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.content
+        with g.cache_db:
+            g.cache_db.execute("INSERT INTO cache(url, data) VALUES (?, ?)", [url, data])
+        return data
+    else:
+        return response.content, response.status_code
 
 
 def make_blueprint(dataset: dict) -> Blueprint:
@@ -18,6 +34,17 @@ def make_blueprint(dataset: dict) -> Blueprint:
         g.db = sqlite3.connect(f"{app.instance_path}/{dataset['id']}.sqlite3")
         g.db.execute(f"ATTACH DATABASE '{USER_DATABASE}' AS user")
         g.db.execute("PRAGMA foreign_keys = ON")
+
+        # create cache db
+        g.cache_db = sqlite3.connect(f"{app.instance_path}/cache.sqlite3")
+        if not g.cache_db.execute('SELECT 1 FROM sqlite_master WHERE name="cache"').fetchone():
+            g.cache_db.execute("""
+                CREATE TABLE cache(
+                    url TEXT PRIMARY KEY,
+                    created TIMESTAMP CURRENT_TIMESTAMP,
+                    data BLOB NOT NULL
+                )
+            """)
 
     @bp.before_request
     def set_dataset():
@@ -86,6 +113,12 @@ def make_blueprint(dataset: dict) -> Blueprint:
         with g.db:
             queries.remove_prefer(g.db, user_id=g.user.user_id, item_id=item_id, remove_item_id=remove_item_id)
         return redirect(url_for('.item', item_id=item_id))
+
+    @bp.route('/item/<item_id>/thumbnail')
+    def thumbnail(item_id):
+        item = Item(*g.db.execute("SELECT * FROM item WHERE item_id = ?", [item_id]).fetchone())
+        if g.dataset['id'] == 'restaurants':
+            return cached_external_url(f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s({item.lon},{item.lat})/{item.lon},{item.lat},12/200x120?access_token={g.mapbox_token}")
 
     @bp.route('/json/typeahead')
     def typeahead():

@@ -50,8 +50,7 @@ class Item:
     @property
     def image(self):
         if g.dataset['id'] == 'restaurants':
-            #return url_for('map', self.lat, lat.lon)
-            return f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s({self.lon},{self.lat})/{self.lon},{self.lat},12/200x120?access_token={g.mapbox_token}"
+            return url_for('.thumbnail', item_id=self.item_id)
         return None
 
     def _make_breadcrumb(self, *keys):

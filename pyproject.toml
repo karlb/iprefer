@@ -12,6 +12,7 @@ networkx = "^2.3"
 flask-dance = "^2.2"
 sparqlwrapper = "^1.8.4"
 numpy = "^1.17.1"
+requests = "^2.22.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

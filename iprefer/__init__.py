@@ -72,6 +72,7 @@ def create_app(test_config=None):
 def add_globals():
     add_user_to_g()
     g.datasets = datasets
+    g.mapbox_token = 'pk.eyJ1Ijoia2FybDQyIiwiYSI6ImNrMWplZXl4OTAwcDUzZHBieGxwZTdla3oifQ.50AjqKkVeMc_KImqSTrMnw'
 
 
 def add_user_to_g():

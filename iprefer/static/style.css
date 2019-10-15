@@ -2,6 +2,16 @@
     padding: 0.3rem 1rem !important;
 }
 
+.item-card.card {
+    max-width: 200px;
+}
+
+.item-card .card-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 /**** LAYOUT ****/
 main > .container {

@@ -47,6 +47,13 @@ class Item:
             values = self.tags.get('addr:street')
             return values[0] if values else None
 
+    @property
+    def image(self):
+        if g.dataset['id'] == 'restaurants':
+            #return url_for('map', self.lat, lat.lon)
+            return f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s({self.lon},{self.lat})/{self.lon},{self.lat},12/200x120?access_token={g.mapbox_token}"
+        return None
+
     def _make_breadcrumb(self, *keys):
         tags = {
             key: json.loads(values)

@@ -44,8 +44,14 @@ class Item:
     @property
     def detail(self):
         if g.dataset['id'] == 'restaurants':
-            values = self.tags.get('addr:street')
-            return values[0] if values else None
+            detail = ' '.join((
+                self.tags.get('cuisine', [''])[0].capitalize(),
+                self.tags.get('amenity', [''])[0],
+            ))
+            streets = self.tags.get('addr:street')
+            if streets:
+                detail += ', ' + streets[0]
+            return detail
 
     @property
     def image(self):

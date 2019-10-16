@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, session, g
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_cachebuster import CacheBuster
 
 __version__ = '0.1.0'
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +39,13 @@ def create_app(test_config=None):
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
+
+    # configure cache buster
+    cache_buster = CacheBuster(config={
+        'extensions': ['.js', '.css'],
+        'hash_size': 5,
+    })
+    cache_buster.init_app(app)
 
     # ensure the instance folder exists
     try:

@@ -89,6 +89,17 @@ dotenv = ["python-dotenv"]
 
 [[package]]
 category = "main"
+description = "Flask-CacheBuster is a lightweight Flask extension that adds a hash to the URL query parameters of each static file."
+name = "flask-cachebuster"
+optional = false
+python-versions = "*"
+version = "1.0.0"
+
+[package.dependencies]
+Flask = "*"
+
+[[package]]
+category = "main"
 description = "Doing the OAuth dance with style using Flask, requests, and oauthlib"
 name = "flask-dance"
 optional = false
@@ -398,7 +409,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "36b8b142fc04d95d79202897f59b6a7205dd42da98a31b6a0cfc4f0f3d6ea27b"
+content-hash = "23c6e411739d431ada2718d6144fb5a383e59b9db02a268f381d83fd5ecfeef7"
 python-versions = "^3.7"
 
 [metadata.hashes]
@@ -411,6 +422,7 @@ click = ["2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13", "5b
 colorama = ["05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d", "f8ac84de7840f5b9c4e3347b3c1eaa50f7e49c2b07596221daec5edaabbd7c48"]
 decorator = ["86156361c50488b84a3f148056ea716ca587df2f0de1d34750d35c21312725de", "f069f3a01830ca754ba5258fde2278454a0b5b79e0d7f5c13b3b97e57d4acff6"]
 flask = ["13f9f196f330c7c2c5d7a5cf91af894110ca0215ac051b5844701f2bfd934d52", "45eb5a6fd193d6cf7e0cf5d8a5b31f83d5faae0293695626f539a823e93b13f6"]
+flask-cachebuster = ["0c8d7b57db8953f5c5875153f16cb970c2ed5a681b39326613c822f0c9764ec8"]
 flask-dance = ["83d6f8d684150ac8fe7d4f2ad8d71170c3233831a09601eb0e5b40d0c28e337d", "ad58ce046454916df3692ba38ae6ee0e0344ee227999124b7b86d923f4a68262", "c3fd1da1c93ada28092e83a5eb843def82701d6d56bd03a512a2e008a25ec106"]
 idna = ["c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407", "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"]
 importlib-metadata = ["23d3d873e008a513952355379d93cbcab874c58f4f034ff657c7a87422fa64e8", "80d2de76188eabfbfcf27e6a37342c2827801e59c4cc14b0371c56fed43820e3"]

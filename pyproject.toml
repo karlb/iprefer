@@ -13,6 +13,7 @@ flask-dance = "^2.2"
 sparqlwrapper = "^1.8.4"
 numpy = "^1.17.1"
 requests = "^2.22.0"
+flask-cachebuster = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

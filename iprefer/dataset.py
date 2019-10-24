@@ -71,10 +71,9 @@ def make_blueprint(dataset: dict) -> Blueprint:
         main_item = Item(*g.db.execute("SELECT * FROM item WHERE item_id = ?", [item_id]).fetchone())
 
         if request.method == 'POST':
-            # TODO: handle name not unique cases
             item = Item(*g.db.execute(
-                "SELECT * FROM item WHERE name = ? LIMIT 1",
-                [request.form['item_name']]
+                "SELECT * FROM item WHERE item_id = ? LIMIT 1",
+                [request.form['item_id']]
             ).fetchone())
             if request.form['better_or_worse'] == 'better':
                 preferred = item

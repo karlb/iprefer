@@ -56,6 +56,7 @@
                            type="search"
                            autocomplete="off">
                     <input type="hidden" name="better_or_worse" value="{{ better_or_worse }}">
+                    <input type="hidden" name="item_id">
                 </div>
                 <div class="typeahead__button">
                     <button type="submit">
@@ -82,9 +83,6 @@
                             }
                         }
                     },
-                    callback: {
-                        onInit: function () {}
-                    },
                     mustSelectItem: true,  // only from predefined items
                     hint: true,  // show inline gray autocomplete
                     accent: true,  // ignore accents 
@@ -93,13 +91,13 @@
                     {% raw %}
                     template: '{{name}}, {{detail}}',
                     {% endraw %}
-                    onSubmit: function(node, form, item, event) {
-                        console.log(item);
-                    },
-                    onClickAfter: function(node, form, item, event) {
-                        console.log('afer');
-                        form.submit();
-                    },
+                    callback: {
+                        onClickBefore: function(node, a, item, event) {
+                            var form = node[0].form;
+                            form.elements.item_id.value = item.item_id;
+                            form.submit();
+                        },
+                    }
                 });
             }
 

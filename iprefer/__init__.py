@@ -23,6 +23,10 @@ datasets = [
         'id': 'software',
         'item': 'software',
     },
+    {
+        'id': 'books',
+        'item': 'book',
+    },
 ]
 
 

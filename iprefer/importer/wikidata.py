@@ -39,7 +39,8 @@ DATASETS: Dict[str, Dict[str, list]] = {
         ],
         "filter": [
             'Q571',  # book
-            'Q47461344',  # literary work
+            'Q47461344',  # written work
+            'Q7725634'  # literary work
             'Q277759',  # book series
         ]
     },

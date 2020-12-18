@@ -31,8 +31,8 @@ def close_connection(exception):
 
 @dataclass
 class Item:
+    item_id: str
     name: str
-    item_id: int
     lat: float
     lon: float
     rank: float

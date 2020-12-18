@@ -4,7 +4,7 @@ import json
 import requests
 
 from flask import Flask, g, render_template, jsonify, request, redirect, url_for, session, Blueprint, current_app as app
-from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.contrib.google import make_google_blueprint, google  # type: ignore
 
 from .db import Item, queries, user_queries, USER_DATABASE
 from .graph import update_rank
@@ -56,7 +56,7 @@ def make_blueprint(dataset: dict) -> Blueprint:
 
     @bp.route('/tag/<key>/<value>')
     def tag(key, value):
-        return render_template('index.html', items=queries.tag_items(g.db, key=key, value=value), category=value)
+        return render_template('index.html', items=queries.tag_items(g.db, key=key, label=value), category=value)
 
     @bp.route('/search')
     def search():

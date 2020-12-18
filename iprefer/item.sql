@@ -33,30 +33,32 @@ LIMIT 16;
 -- record_class: Item
 SELECT item.*
 FROM item
-    JOIN tags USING (item_id)
+    JOIN item_to_tag  USING (item_id)
+    JOIN tag USING (tag_id)
 WHERE key = :key
-  AND value = :value
+  AND label = :label
 ORDER BY coalesce(rank, 'inf')
 LIMIT 16;
 
 -- name: search_items
 -- record_class: Item
-SELECT item.*
-FROM item
+SELECT item_with_tags.*
+FROM item_with_tags
 WHERE name LIKE '%' || :term || '%'
 ORDER BY coalesce(rank, 'inf')
 LIMIT 16;
 
 -- name: tags
-SELECT key, json_group_array(value)
-FROM tags
+SELECT key, json_group_array(label)
+FROM tag
+    JOIN item_to_tag USING (tag_id)
 WHERE item_id = :item_id
 GROUP BY key;
 
 -- name: tag
 -- record_class: scalar
-SELECT value
-FROM tags
+SELECT label
+FROM tag
 WHERE item_id = :item_id
   AND key = :key;
 
@@ -67,8 +69,9 @@ SELECT item_with_tags.*
 FROM item_with_tags
     JOIN (
         SELECT alternative.item_id, count(*) similarity
-        FROM tags main_item
-            JOIN tags alternative USING (key, value)
+        FROM item_to_tag main_item
+            JOIN item_to_tag alternative USING (tag_id)
+            JOIN tag USING (tag_id)
         WHERE main_item.item_id = :item_id
           AND key IN ('addr:suburb', 'addr:street', 'amenity', 'cuisine')
           AND alternative.item_id != main_item.item_id

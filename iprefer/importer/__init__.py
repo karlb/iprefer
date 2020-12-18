@@ -3,7 +3,7 @@ import sqlite3
 from itertools import chain
 
 from flask.cli import AppGroup
-import aiosql
+import aiosql  # type: ignore
 
 importer_cli = AppGroup('import')
 

@@ -31,8 +31,8 @@ LIMIT 16;
 
 -- name: tag_items
 -- record_class: Item
-SELECT item.*
-FROM item
+SELECT item_with_tags.*
+FROM item_with_tags
     JOIN item_to_tag  USING (item_id)
     JOIN tag USING (tag_id)
 WHERE key = :key

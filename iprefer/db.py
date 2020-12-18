@@ -36,10 +36,10 @@ class Item:
     lat: float
     lon: float
     rank: float
-    tags: dict = '{}'
+    tags: dict = '{}'  # type: ignore
 
     def __post_init__(self):
-        self.tags = json.loads(self.tags)
+        self.tags = json.loads(self.tags)  # type: ignore
 
     @property
     def detail(self):
@@ -52,6 +52,11 @@ class Item:
             if streets:
                 detail += ', ' + streets[0]
             return detail
+        if g.dataset['id'] == 'books':
+            authors = self.tags.get('author')
+            if authors:
+                return 'by ' + ', '.join(authors)
+            return 'unknown author'
 
     @property
     def image(self):

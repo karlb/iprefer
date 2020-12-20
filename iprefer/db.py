@@ -2,10 +2,11 @@ from dataclasses import dataclass
 import sqlite3
 import json
 
-import aiosql
+import aiosql  # type: ignore
 from flask import g, url_for
 
 from iprefer import APP_ROOT
+from iprefer.helper import measure_time
 
 USER_DATABASE = APP_ROOT + '/../data/user.sqlite3'
 
@@ -100,9 +101,38 @@ class User:
     google_id: int
 
 
+class ProfilingDBAdapter(aiosql.adapters.sqlite3.SQLite3DriverAdapter):
+
+    slow_threshold = 0.1
+
+
+for method in [
+        'select', 'select_one', 'select_value', 'select_cursor',
+        'insert_update_delete', 'insert_update_delete_many', 'insert_returning'
+    ]:
+
+    def make_wrapped(method):
+
+        def wrapped_func(cls, conn, _query_name, sql, parameters, *args, **kwargs):
+            superclass = super(ProfilingDBAdapter, ProfilingDBAdapter)
+            with measure_time() as query_duration:
+                result = getattr(superclass, method)(
+                    conn, _query_name, sql, parameters, *args, **kwargs
+                )
+
+            if query_duration > cls.slow_threshold:
+                print(f"Query took {query_duration:.2f}s:", _query_name, parameters)
+
+            return result
+
+        return wrapped_func
+
+    setattr(ProfilingDBAdapter, method, classmethod(make_wrapped(method)))
+
+
 queries = aiosql.from_path(
     APP_ROOT + "/item.sql",
-    "sqlite3",
+    ProfilingDBAdapter,
     record_classes=dict(
         Item=Item,
         scalar=lambda value: value,

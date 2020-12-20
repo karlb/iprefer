@@ -1,3 +1,7 @@
+-- name: single_item^
+-- record_class: Item
+SELECT * FROM item WHERE item_id = :item_id;
+
 -- name: better
 -- record_class: Item
 -- Get all items preferred to the given one

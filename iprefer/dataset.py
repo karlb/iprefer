@@ -8,6 +8,7 @@ from flask_dance.contrib.google import make_google_blueprint, google  # type: ig
 
 from .db import Item, queries, user_queries, USER_DATABASE
 from .graph import update_rank
+from .helper import measure_time
 
 
 def cached_external_url(url):
@@ -68,7 +69,7 @@ def make_blueprint(dataset: dict) -> Blueprint:
 
     @bp.route('/item/<item_id>', methods=['GET', 'POST'])
     def item(item_id):
-        main_item = Item(*g.db.execute("SELECT * FROM item WHERE item_id = ?", [item_id]).fetchone())
+        main_item = queries.single_item(g.db, item_id=item_id)
 
         if request.method == 'POST':
             item = Item(*g.db.execute(

@@ -20,12 +20,6 @@ FROM item_with_tags AS item
 WHERE prefers.user_id = :user_id
   AND prefers.prefers = :item_id
 
--- name: all_items
--- record_class: Item
-SELECT item.*
-FROM item_with_tags AS item
-ORDER BY coalesce(rank, 'inf')
-
 -- name: start_page_items
 -- record_class: Item
 SELECT *
@@ -48,7 +42,8 @@ LIMIT 16;
 -- record_class: Item
 SELECT item_with_tags.*
 FROM item_with_tags
-WHERE name LIKE '%' || :term || '%'
+    JOIN item_fts USING (item_id)
+WHERE item_fts.name MATCH :term
 ORDER BY coalesce(rank, 'inf')
 LIMIT 16;
 

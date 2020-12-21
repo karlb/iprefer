@@ -122,7 +122,7 @@ def make_blueprint(dataset: dict) -> Blueprint:
 
     @bp.route('/json/typeahead')
     def typeahead():
-        items = queries.all_items(g.db)
+        items = queries.search_items(g.db, request.args['term'])
         return jsonify([
             dict(name=i.name, item_id=i.item_id, detail=i.detail)
             for i in items

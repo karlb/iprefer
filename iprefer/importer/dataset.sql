@@ -45,3 +45,12 @@ DROP TABLE IF EXISTS item_with_tags;
 CREATE TABLE item_with_tags AS
 SELECT * FROM item_with_tags_view;
 CREATE INDEX item_with_tags_item_idx ON item_with_tags(item_id);
+
+DROP TABLE IF EXISTS item_fts;
+CREATE VIRTUAL TABLE item_fts USING fts4(
+    item_id,
+    name,
+    detail,
+    notindexed=item_id
+);
+INSERT INTO item_fts SELECT item_id, name, '' FROM item;

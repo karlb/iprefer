@@ -77,12 +77,17 @@
                     order: "asc",
                     source: {
                         groupName: {
-                            ajax: {
-                                url: '{{ url_for('.typeahead') }}',
-                                method: 'GET',
+                            ajax: query => {
+                                return {
+                                    url: '{{ url_for('.typeahead') }}',
+                                    method: 'GET',
+                                    data: {term: query},
+                                }
                             }
                         }
                     },
+                    dynamic: true,  // request with updated query after each keypress
+                    minLength: 3,  // only fetch results once three letters have been entered
                     mustSelectItem: true,  // only from predefined items
                     hint: true,  // show inline gray autocomplete
                     accent: true,  // ignore accents 

@@ -3,9 +3,12 @@ DROP TABLE IF EXISTS item;
 CREATE TABLE item(
     item_id text PRIMARY KEY,
     name text NOT NULL,
+    description text,
+    alt_names text,
     lat float,
     lon float,
-    rank float
+    rank float,
+    importance float
 ) WITHOUT ROWID;
 CREATE INDEX rank_idx ON item(rank);
 

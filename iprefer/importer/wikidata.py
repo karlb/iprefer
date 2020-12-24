@@ -117,13 +117,13 @@ def parse_single_result(result_row: dict):
     )
 
 
-def batch_query(query, item_classes, batch_size=100):
+def batch_query(query, item_classes, batch_size=50):
     iterator = iter(item_classes)
-    results: Set[tuple] = set()
+    results: Dict[Any, tuple] = {}
     while True:
         batch = list(islice(iterator, batch_size))
         if not batch:
-            return results
+            break
 
         prepared_query = query.replace(
             'CLASSES',
@@ -141,23 +141,28 @@ def batch_query(query, item_classes, batch_size=100):
             continue
 
         print(f'{len(batch_results)} results')
-        results |= {
-            parse_single_result(result)
-            for result in batch_results
-        }
+        for result in batch_results:
+            r = parse_single_result(result)
+            results[r[0]] = r
+
         if query_duration < 5:
             batch_size += 1
         if query_duration > 30:
             batch_size //= 2
-    return results
+
+    return results.values()
 
 
 def get_items(item_classes):
-    query = """SELECT DISTINCT ?item ?itemLabel
+    query = """SELECT
+            ?item
+            (SAMPLE(?itemLabel) AS ?itemLabel)
+            (SAMPLE(?itemDescription) AS ?itemDescription)
+            (GROUP_CONCAT(?altLabel; separator = "|||") AS ?altLabels)
         WHERE
         {
             {
-                SELECT ?item ?itemLabel
+                SELECT ?item ?itemLabel ?itemDescription
                 WHERE {
                     ?item wdt:P31 ?class.
                     VALUES ?class {CLASSES}.
@@ -166,14 +171,17 @@ def get_items(item_classes):
             }
             FILTER lang(?itemLabel)  # filter out elements without label
         }
+        GROUP BY ?item
     """ % dict(
         LABEL_SERVICE=LABEL_SERVICE,
     )
-    result_tuples = batch_query(query, item_classes)
+    result_tuples = batch_query(query, item_classes, batch_size=4)
     yield from (
         dict(
             item_id=result[0],
             name=result[1],
+            description=result[2],
+            alt_names=json.dumps(result[3].split('|||') if len(result) >= 4 and result[3] else None),
             lat=None,
             lon=None,
         )
@@ -219,7 +227,7 @@ def get_tag_labels(dataset, item_classes):
             predicate=predicate,
             LABEL_SERVICE=LABEL_SERVICE,
         )
-        result_tuples = batch_query(query, item_classes, batch_size=50)
+        result_tuples = batch_query(query, item_classes)
         yield from (
             dict(
                 tag_id=key + result[0],
@@ -248,8 +256,8 @@ def import_wikidata(dataset_name):
     items = get_items(item_classes)
     print(
         conn.executemany("""
-                INSERT INTO item(name, item_id, lat, lon)
-                VALUES (:name, :item_id, :lat, :lon)
+                INSERT INTO item(name, item_id, description, alt_names, lat, lon)
+                VALUES (:name, :item_id, :description, :alt_names, :lat, :lon)
             """,
             items
         ).rowcount,

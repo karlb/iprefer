@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import sqlite3
 import json
+from typing import List
 
 import aiosql  # type: ignore
 from flask import g, url_for
@@ -34,6 +35,8 @@ def close_connection(exception):
 class Item:
     item_id: str
     name: str
+    description: str
+    alt_names: List[str] 
     lat: float
     lon: float
     rank: float
@@ -41,6 +44,7 @@ class Item:
 
     def __post_init__(self):
         self.tags = json.loads(self.tags)  # type: ignore
+        self.alt_names = json.loads(self.alt_names) if self.alt_names else []  # type: ignore
 
     @property
     def detail(self):

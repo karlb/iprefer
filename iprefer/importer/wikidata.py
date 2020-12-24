@@ -288,5 +288,4 @@ def import_wikidata(dataset_name):
     conn.commit()
 
     queries.refresh_views(conn)
-    conn.execute('ANALYZE')
     conn.commit()

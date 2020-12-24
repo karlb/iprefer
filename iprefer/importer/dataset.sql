@@ -31,26 +31,32 @@ CREATE TABLE item_to_tag(
 CREATE INDEX item_to_tag_item_idx ON item_to_tag(item_id);
 CREATE INDEX item_to_tag_tag_idx ON item_to_tag(tag_id);
 
-DROP VIEW IF EXISTS item_with_tags_view;
-CREATE VIEW item_with_tags_view AS
-SELECT item.*, json_group_object(key, json(labels)) AS tags
-FROM item
-    LEFT JOIN (
+DROP VIEW IF EXISTS item_tags_view;
+CREATE VIEW item_tags_view AS
+SELECT item.item_id, json_group_object(key, json(labels)) AS tags
+FROM (
         SELECT item_id, key, json_group_array(label) AS labels
         FROM tag
              JOIN item_to_tag USING (tag_id)
         GROUP BY item_id, key
-    ) USING (item_id)
+    )
 GROUP BY item_id;
+
 
 -- name: refresh_views#
 ATTACH DATABASE 'wikilinks.sqlite3' AS wikilinks;
 UPDATE item SET importance = (SELECT rank FROM wikilinks WHERE qid = item_id);
 
-DROP TABLE IF EXISTS item_with_tags;
-CREATE TABLE item_with_tags AS
-SELECT * FROM item_with_tags_view;
-CREATE INDEX item_with_tags_item_idx ON item_with_tags(item_id);
+DROP TABLE IF EXISTS item_tags_mview;
+CREATE TABLE item_tags_mview AS
+SELECT * FROM item_tags_view;
+CREATE INDEX item_tags_mview_item_id_idx ON item_tags_mview(item_id);
+
+DROP VIEW IF EXISTS item_with_tags;
+CREATE VIEW item_with_tags AS
+SELECT item.*, tags
+FROM item
+    JOIN item_tags_mview USING (item_id);
 
 DROP TABLE IF EXISTS item_fts;
 CREATE VIRTUAL TABLE item_fts USING fts4(
@@ -60,3 +66,5 @@ CREATE VIRTUAL TABLE item_fts USING fts4(
     notindexed=item_id
 );
 INSERT INTO item_fts SELECT item_id, name, '' FROM item;
+
+ANALYZE;

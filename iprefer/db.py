@@ -40,6 +40,7 @@ class Item:
     lat: float
     lon: float
     rank: float
+    importance: float
     tags: dict = '{}'  # type: ignore
 
     def __post_init__(self):

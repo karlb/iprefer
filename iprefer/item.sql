@@ -24,7 +24,7 @@ WHERE prefers.user_id = :user_id
 -- record_class: Item
 SELECT *
 FROM item_with_tags
-ORDER BY coalesce(rank, 'inf')
+ORDER BY coalesce(rank, 100) * (1 / coalesce(importance, 0.1))
 LIMIT 16;
 
 -- name: tag_items

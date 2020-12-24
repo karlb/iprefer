@@ -44,6 +44,9 @@ FROM item
 GROUP BY item_id;
 
 -- name: refresh_views#
+ATTACH DATABASE 'wikilinks.sqlite3' AS wikilinks;
+UPDATE item SET importance = (SELECT rank FROM wikilinks WHERE qid = item_id);
+
 DROP TABLE IF EXISTS item_with_tags;
 CREATE TABLE item_with_tags AS
 SELECT * FROM item_with_tags_view;

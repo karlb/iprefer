@@ -78,6 +78,11 @@ def create_app(test_config=None):
     # cli commands for admins
     app.cli.add_command(importer_cli)
 
+    # add filter for jinja templating
+    @app.template_filter('capfirst')
+    def capfirst(s):
+        return s[:1].upper() + s[1:]
+
     return app
 
 

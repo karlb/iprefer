@@ -131,6 +131,9 @@
 
             <div class="row">
                 <div class="col">
+                    <p class="lead">
+                    {{ main_item.description | capfirst }}
+                    </p>
                     <table>
                         {% for key, values in tags.items() if ':' not in key %}
                         <tr>
@@ -138,7 +141,7 @@
                             <td>
                                 {% for val in values %}
                                 <a href="{{ url_for('.tag', key=key, value=val) }}">{{ val }}</a>
-                                  {{ ', ' if not loop.last }}
+                                  {{- ', ' if not loop.last }}
                                 {% endfor %}
                             </td>
                         </tr>

@@ -42,6 +42,9 @@ class Item:
     rank: float
     importance: float
     tags: dict = '{}'  # type: ignore
+    # comparison to main item on page
+    is_better: bool = False
+    is_worse: bool = False
 
     def __post_init__(self):
         self.tags = json.loads(self.tags)  # type: ignore

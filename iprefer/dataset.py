@@ -5,10 +5,12 @@ import requests
 
 from flask import Flask, g, render_template, jsonify, request, redirect, url_for, session, Blueprint, current_app as app
 from flask_dance.contrib.google import make_google_blueprint, google  # type: ignore
+from jinja2 import Markup
 
 from .db import Item, queries, user_queries, USER_DATABASE
 from .graph import update_rank
 from .helper import measure_time
+import iprefer.fragments as fragments
 
 
 def cached_external_url(url):
@@ -96,7 +98,7 @@ def make_blueprint(dataset: dict) -> Blueprint:
         }
         ctx = dict(
             main_item=main_item,
-            alternatives=queries.alternatives(g.db, item_id=item_id),
+            alternatives=Markup(fragments.alternatives(item_id)),
             tags=tags,
         )
         if g.get('user'):
@@ -107,6 +109,12 @@ def make_blueprint(dataset: dict) -> Blueprint:
             ))
 
         return render_template('item.html', **ctx)
+
+    
+    @bp.route('/item/<item_id>/alternatives', methods=['GET', 'POST'])
+    def alternatives(item_id):
+        return fragments.alternatives(item_id, search_term=request.args.get('search_term'))
+
 
     @bp.route('/item/<item_id>/remove/<remove_item_id>', methods=['POST'])
     def remove_prefer(item_id, remove_item_id):

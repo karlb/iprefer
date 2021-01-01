@@ -1,0 +1,21 @@
+{% macro short_item(item) %}
+    <a href="{{ url_for('.item', item_id=item.item_id) }}">{{item.name}}, {{ item.detail }}</a>
+{% endmacro %}
+
+
+<div class="list-group" id="alternatives">
+    {% for item in alternatives %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            {{ short_item(item) }}
+            {% if g.user %}
+            <div class="btn-group" role="group" aria-label="compare" data-item-id="{{ item.item_id }}">
+                <button type="button" class="better btn {{ 'active btn-success' if item.is_better else 'btn-light'}}">Better</button>
+                <button type="button" class="worse btn {{ 'active btn-danger' if item.is_worse else 'btn-light'}}">Worse</button>
+                <button type="button" class="no-compare btn btn-light">Not comparable</button>
+            </div>
+            {% endif %}
+        </div>
+    {% else %}
+        No recommendations found.
+    {% endfor %}
+</div>

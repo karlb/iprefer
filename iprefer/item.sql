@@ -64,7 +64,7 @@ WHERE item_id = :item_id
 -- name: alternatives
 -- record_class: Item
 -- Get recommended alternatives to given item
-SELECT item_with_tags.*
+SELECT item_with_tags.*, is_better, is_worse
 FROM item_with_tags
     JOIN (
         SELECT alternative.item_id, count(*) similarity
@@ -72,10 +72,56 @@ FROM item_with_tags
             JOIN item_to_tag alternative USING (tag_id)
             JOIN tag USING (tag_id)
         WHERE main_item.item_id = :item_id
-          AND key IN ('addr:suburb', 'addr:street', 'amenity', 'cuisine')
+          /* AND key IN ('addr:suburb', 'addr:street', 'amenity', 'cuisine') */
+          AND key IN ('author', 'genre', 'main_subject')
           AND alternative.item_id != main_item.item_id
         GROUP BY 1
     ) USING (item_id)
+    LEFT JOIN (
+        SELECT prefers AS item_id, 1 AS is_better
+        FROM prefers
+        WHERE user_id = :user_id
+          AND "to" = :item_id
+    ) USING (item_id)
+    LEFT JOIN (
+        SELECT "to" AS item_id, 1 AS is_worse
+        FROM prefers
+        WHERE user_id = :user_id
+          AND prefers = :item_id
+    ) USING (item_id)
+ORDER BY 1/coalesce(rank, 0.3) * similarity DESC
+LIMIT 10;
+
+-- name: alternatives_search
+-- record_class: Item
+-- TODO: unify with "alternatives"
+SELECT item_with_tags.*, is_better, is_worse
+FROM item_with_tags
+    JOIN (
+        SELECT alternative.item_id, count(*) similarity
+        FROM item_to_tag main_item
+            JOIN item_to_tag alternative USING (tag_id)
+            JOIN tag USING (tag_id)
+        WHERE main_item.item_id = :item_id
+          /* AND key IN ('addr:suburb', 'addr:street', 'amenity', 'cuisine') */
+          AND key IN ('author', 'genre', 'main_subject')
+          AND alternative.item_id != main_item.item_id
+        GROUP BY 1
+    ) USING (item_id)
+    JOIN item_fts USING (item_id)
+    LEFT JOIN (
+        SELECT prefers AS item_id, 1 AS is_better
+        FROM prefers
+        WHERE user_id = :user_id
+          AND "to" = :item_id
+    ) USING (item_id)
+    LEFT JOIN (
+        SELECT "to" AS item_id, 1 AS is_worse
+        FROM prefers
+        WHERE user_id = :user_id
+          AND prefers = :item_id
+    ) USING (item_id)
+WHERE item_fts.name MATCH :search_term
 ORDER BY 1/coalesce(rank, 0.3) * similarity DESC
 LIMIT 10;
 

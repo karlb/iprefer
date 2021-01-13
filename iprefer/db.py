@@ -66,6 +66,8 @@ class Item:
             if authors:
                 return 'by ' + ', '.join(authors)
             return 'unknown author'
+        if g.dataset['id'] == 'software':
+            return self.description
 
     @property
     def image(self):

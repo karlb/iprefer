@@ -15,7 +15,7 @@ USER_DATABASE = APP_ROOT + '/../data/user.sqlite3'
 def get_db():
     db = getattr(g, '_user_db', None)
     if db is None:
-        db = g._database = sqlite3.connect(USER_DATABASE)
+        db = g._user_db = sqlite3.connect(USER_DATABASE)
         db.execute("PRAGMA foreign_keys = ON")
         if not db.execute(
                 "SELECT name from sqlite_master WHERE type='table' AND name='user'"

@@ -4,9 +4,12 @@ from flask import Flask, g, render_template, jsonify, request, redirect, url_for
 
 def alternatives(item_id, search_term=None):
     ctx = {}
-    if search_term:
-        ctx['alternatives'] = queries.alternatives_search(g.db, item_id=item_id, search_term=search_term, user_id=g.user.user_id)
+    if hasattr(g, 'user'):
+        if search_term:
+            ctx['alternatives'] = queries.alternatives_search(g.db, item_id=item_id, search_term=search_term, user_id=g.user.user_id)
+        else:
+            ctx['alternatives'] = queries.alternatives(g.db, item_id=item_id, user_id=g.user.user_id)
     else:
-        ctx['alternatives'] = queries.alternatives(g.db, item_id=item_id, user_id=g.user.user_id)
+        ctx['alternatives'] = []
 
     return render_template('alternatives.html', **ctx)
